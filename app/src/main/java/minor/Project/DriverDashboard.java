@@ -1,81 +1,57 @@
 package minor.Project;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 public class DriverDashboard extends AppCompatActivity {
-    Button wet,dry;
 
-    @SuppressLint("MissingInflatedId")
+    private Button wetButton, dryButton;
+    private String driverId;
+    private String driverName; // This will now contain the actual driver name
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_driver_dashboard);
 
-        wet=findViewById(R.id.wetButton);
-        dry=findViewById(R.id.dryWaste);
+        // Retrieve the driverId and driverName passed from the login activity
+        Intent intent = getIntent();
+        driverId = intent.getStringExtra("driverId");
+        driverName = intent.getStringExtra("driverName");
 
-        wet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveWasteType("Wet Waste");
-                Intent wetIntent=new Intent(DriverDashboard.this,startScreen.class);
-                startActivity(wetIntent);
-                finish();
-            }
-        });
+        wetButton = findViewById(R.id.wetButton);
+        dryButton = findViewById(R.id.dryWaste);
 
-        dry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveWasteType("Dry Waste");
-                Intent dryIntent=new Intent(DriverDashboard.this,startScreen.class);
-                startActivity(dryIntent);
-                finish();
-            }
-        });
-
+        wetButton.setOnClickListener(v -> saveWasteType("Wet Waste"));
+        dryButton.setOnClickListener(v -> saveWasteType("Dry Waste"));
     }
 
-    private void saveWasteType(String wasteType){
-        ParseUser currentUser=ParseUser.getCurrentUser();
-        if(currentUser!=null){
-            String driverId=currentUser.getObjectId();
-            String driverName=currentUser.getString("username");
+    private void saveWasteType(String wasteType) {
+        if (driverId != null && driverName != null) {
+            ParseObject waste = new ParseObject("WasteType");
+            waste.put("type", wasteType);
+            waste.put("driverId", driverId);
+            // Use the actual driver name instead of the username
+            waste.put("driverName", driverName);
 
-            ParseObject waste=new ParseObject("WasteType");
-            waste.put("type",wasteType);
-            waste.put("driverId",driverId);
-            waste.put("driverName",driverName);
-
-            waste.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if(e==null){
-                        Toast.makeText(DriverDashboard.this, "WasteType Saved", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(DriverDashboard.this,"Failed to save:"+e.getMessage(),Toast.LENGTH_SHORT).show();
-                    }
+            waste.saveInBackground(e -> {
+                if (e == null) {
+                    Toast.makeText(DriverDashboard.this, "Waste Type Saved", Toast.LENGTH_SHORT).show();
+                    // Go to the tracking screen
+                    Intent intent = new Intent(DriverDashboard.this, startScreen.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(DriverDashboard.this, "Failed to save: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-        }else{
-            Toast.makeText(DriverDashboard.this,"No Driver is Logged in",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(DriverDashboard.this, "Driver information missing", Toast.LENGTH_SHORT).show();
         }
     }
 }

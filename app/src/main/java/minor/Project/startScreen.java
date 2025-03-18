@@ -1,9 +1,7 @@
 package minor.Project;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -21,72 +19,55 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 public class startScreen extends AppCompatActivity {
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
-    private FusedLocationProviderClient fusedLocationClient;
+
+    private static final int PERMISSION_REQUEST_CODE = 1001;
+    private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
+
+    private Button startButton, stopButton;
+    private TextView timerTextView;
+    private boolean isTracking = false;
+
     private Handler timerHandler = new Handler();
     private Runnable timerRunnable;
     private long startTime = 0;
-    private TextView timerTextView;
-    private boolean isTracking = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
 
-        Button startButton = findViewById(R.id.startButton);
-        Button stopButton = findViewById(R.id.stopButton);
-        timerTextView = findViewById(R.id.textView9); // Reuse the TextView for the timer
+        startButton = findViewById(R.id.startButton);
+        stopButton = findViewById(R.id.stopButton);
+        timerTextView = findViewById(R.id.timerTextView);
 
-        // Initialize location services
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Start Button Click Listener
-        startButton.setOnClickListener(v -> {
-            if (checkLocationPermission()) {
-                startTracking();
-            } else {
-                requestLocationPermission();
-            }
-        });
-
-        // Stop Button Click Listener
+        startButton.setOnClickListener(v -> startTracking());
         stopButton.setOnClickListener(v -> stopTracking());
     }
 
     private void startTracking() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
+            return;
+        }
+
         if (isTracking) {
-            return; // Already tracking
+            Toast.makeText(this, "Already tracking", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         isTracking = true;
         startTime = System.currentTimeMillis();
-        startTimer();
-        startLocationUpdates();
 
-        Toast.makeText(this, "Tracking started", Toast.LENGTH_SHORT).show();
-    }
-
-    private void stopTracking() {
-        if (!isTracking) {
-            return; // Not tracking
-        }
-
-        isTracking = false;
-        stopTimer();
-        stopLocationUpdates();
-
-        Toast.makeText(this, "Tracking stopped", Toast.LENGTH_SHORT).show();
-    }
-
-    private void startTimer() {
+        // Timer logic
         timerRunnable = new Runnable() {
             @Override
             public void run() {
@@ -95,94 +76,79 @@ public class startScreen extends AppCompatActivity {
                 int minutes = seconds / 60;
                 seconds = seconds % 60;
 
-                timerTextView.setText(String.format("%02d:%02d", minutes, seconds));
-                timerHandler.postDelayed(this, 1000); // Update every second
+                String time = String.format("%02d:%02d", minutes, seconds);
+                timerTextView.setText(time);
+
+                timerHandler.postDelayed(this, 1000);
             }
         };
         timerHandler.post(timerRunnable);
-    }
 
-    private void stopTimer() {
-        timerHandler.removeCallbacks(timerRunnable);
-        timerTextView.setText("Start Day"); // Reset the text
-    }
-
-    @SuppressLint("MissingPermission")
-    private void startLocationUpdates() {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(10000); // Update every 10 seconds
-        locationRequest.setFastestInterval(5000); // Fastest update interval
+        // Location request setup
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                .setMinUpdateIntervalMillis(2000) // Fastest interval
+                .build();
 
         locationCallback = new LocationCallback() {
             @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    updateLocationInBackend(location);
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                if (locationResult != null) {
+                    locationResult.getLocations().forEach(location -> {
+                        Log.d("StartScreen", "Location: " + location.getLatitude() + ", " + location.getLongitude());
+
+                        // ✅ Save to Back4App here
+                        ParseUser currentUser = ParseUser.getCurrentUser();
+                        if (currentUser != null) {
+                            ParseObject locationData = new ParseObject("DriverLocation");
+                            locationData.put("latitude", location.getLatitude());
+                            locationData.put("longitude", location.getLongitude());
+                            locationData.put("driverId", currentUser.getObjectId());
+
+                            locationData.saveInBackground(e -> {
+                                if (e != null) {
+                                    Log.e("StartScreen", "Failed to save location: " + e.getMessage());
+                                } else {
+                                    Log.d("StartScreen", "Driver location saved successfully!");
+                                }
+                            });
+                        } else {
+                            Log.e("StartScreen", "Failed to get driverId - User not logged in");
+                        }
+                    });
                 }
             }
         };
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        Toast.makeText(this, "Tracking started", Toast.LENGTH_SHORT).show();
     }
 
-    private void stopLocationUpdates() {
-        if (locationCallback != null) {
-            fusedLocationClient.removeLocationUpdates(locationCallback);
+    private void stopTracking() {
+        if (!isTracking) {
+            Toast.makeText(this, "Not tracking", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        isTracking = false;
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+
+        // Stop timer
+        timerHandler.removeCallbacks(timerRunnable);
+
+        Toast.makeText(this, "Tracking stopped", Toast.LENGTH_SHORT).show();
     }
 
-    private void updateLocationInBackend(Location location) {
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser != null) {
-            ParseObject locationData = new ParseObject("DriverLocation");
-            locationData.put("driverId", currentUser.getObjectId());
-            locationData.put("latitude", location.getLatitude());
-            locationData.put("longitude", location.getLongitude());
-            locationData.put("timestamp", System.currentTimeMillis());
-
-            locationData.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        Log.d("startScreen", "Location updated in backend");
-                    } else {
-                        Log.e("startScreen", "Failed to update location: " + e.getMessage());
-                        Toast.makeText(startScreen.this, "Failed to update location", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        } else {
-            Toast.makeText(this, "No driver logged in", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private boolean checkLocationPermission() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestLocationPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-    }
-
+    // Handle permission request result
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startTracking();
             } else {
-                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        stopTracking();
     }
 }
