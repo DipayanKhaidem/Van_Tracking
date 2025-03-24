@@ -8,34 +8,16 @@
     android:layout_height="match_parent"
     tools:context=".User_Dashboard">
 
-    <!-- Search Bar at the Top -->
-<!--    <com.google.android.material.textfield.TextInputLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:hint="Search location">-->
-
-<!--        <AutoCompleteTextView-->
-<!--            android:id="@+id/searchBar"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:textColor="@android:color/black"-->
-<!--            android:textColorHint="@android:color/darker_gray" />-->
-<!--    </com.google.android.material.textfield.TextInputLayout>-->
-
-    <!-- Google Maps Fragment -->
-    
-    <SearchView
-        android:id="@+id/mapSearch"
+    <!-- ✅ OSM Search View -->
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:queryHint="Search..."
-        android:elevation="5dp"
-        android:iconifiedByDefault="false"
-        android:background="@drawable/bg_search_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:queryHint="Search location"
+        android:background="@android:color/white"
+        android:padding="8dp" />
+
+    <!-- ✅ OpenStreetMap View -->
     <FrameLayout
         android:id="@+id/mapContainer"
         android:layout_width="match_parent"
@@ -43,14 +25,57 @@
         android:layout_weight="1"
         android:background="#ECECEC">
 
-        <fragment
+        <org.osmdroid.views.MapView
             android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:clickable="true" />
+        <ImageButton
+            android:id="@+id/myLocationButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:background="@android:color/white"
+            android:elevation="8dp"
+            android:src="@android:drawable/ic_menu_mylocation"
+            android:contentDescription="My Location"
+            android:tint="#000000"
+            tools:ignore="UseAppTint" />
     </FrameLayout>
 
-    <!-- ETA and Distance Container -->
+
+    <!-- ✅ Zoom Controls -->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/zoomControls"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom|end"-->
+<!--        android:padding="16dp"-->
+<!--        android:background="@android:color/transparent">-->
+
+<!--        &lt;!&ndash; Zoom In Button &ndash;&gt;-->
+<!--        <ImageButton-->
+<!--            android:id="@+id/zoomInButton"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:background="@android:color/transparent"-->
+<!--            android:src="@android:drawable/ic_input_add"-->
+<!--            android:contentDescription="Zoom In" />-->
+
+<!--        &lt;!&ndash; Zoom Out Button &ndash;&gt;-->
+<!--        <ImageButton-->
+<!--            android:id="@+id/zoomOutButton"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:background="@android:color/transparent"-->
+<!--            android:src="@android:drawable/ic_input_delete"-->
+<!--            android:contentDescription="Zoom Out" />-->
+<!--    </LinearLayout>-->
+
+    <!-- ✅ ETA and Distance Container -->
+    
     <LinearLayout
         android:id="@+id/etaDistanceContainer"
         android:layout_width="match_parent"
@@ -81,7 +106,7 @@
             android:textColor="#000000" />
     </LinearLayout>
 
-    <!-- Bottom Navigation -->
+    <!-- ✅ Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"

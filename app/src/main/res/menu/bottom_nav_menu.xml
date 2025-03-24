@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:title="Home"
+    <item
+        android:id="@+id/home"
+        android:title="Home"
         android:icon="@drawable/baseline_home_24"
-        android:id="@+id/home"/>
-    <item android:title="Profile"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/profile"
+        android:title="Profile"
         android:icon="@drawable/baseline_account_box_24"
-        android:id="@+id/profile"/>
-    <item android:title="Notification"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/notification"
+        android:title="Notification"
         android:icon="@drawable/baseline_add_alert_24"
-        android:id="@+id/notification"/>
-    <item android:title="Settings"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/settings"
+        android:title="Settings"
         android:icon="@drawable/baseline_app_settings_alt_24"
-        android:id="@+id/settings"/>
+        app:showAsAction="ifRoom" />
 </menu>

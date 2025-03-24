@@ -133,13 +133,13 @@ public class startScreen extends AppCompatActivity {
         isTracking = false;
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
 
-        // Stop timer
+
         timerHandler.removeCallbacks(timerRunnable);
 
         Toast.makeText(this, "Tracking stopped", Toast.LENGTH_SHORT).show();
     }
 
-    // Handle permission request result
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

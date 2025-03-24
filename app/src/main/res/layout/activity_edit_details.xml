@@ -31,9 +31,9 @@
         android:layout_width="331dp"
         android:layout_height="50dp"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="248dp"
+        android:layout_marginTop="201dp"
         android:layout_marginEnd="40dp"
-        android:layout_marginBottom="433dp"
+        android:layout_marginBottom="480dp"
         android:hint="Username"
         android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -41,48 +41,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Phone -->
+
+    <!-- Address -->
     <EditText
         android:id="@+id/editTextEmail"
         android:layout_width="331dp"
         android:layout_height="50dp"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="314dp"
+        android:layout_marginTop="262dp"
         android:layout_marginEnd="40dp"
-        android:layout_marginBottom="367dp"
+        android:layout_marginBottom="419dp"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Phone -->
-    <EditText
-        android:id="@+id/editTextPhone"
-        android:layout_width="331dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="380dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="301dp"
-        android:hint="Phone"
-        android:inputType="phone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <!-- Address -->
-    <EditText
-        android:id="@+id/editTextAddress"
-        android:layout_width="331dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="446dp"
-        android:layout_marginEnd="40dp"
-        android:layout_marginBottom="235dp"
-        android:hint="Address"
-        android:inputType="textPostalAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -91,16 +62,76 @@
     <!-- Password -->
 
     <!-- Edit Button -->
+    <EditText
+        android:id="@+id/editTextPhone"
+        android:layout_width="331dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="325dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="356dp"
+        android:hint="Phone"
+        android:inputType="phone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextAddress"
+        android:layout_width="331dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="394dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="287dp"
+        android:hint="Address"
+        android:inputType="textPostalAddress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/latitude"
+        android:layout_width="331dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="458dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="223dp"
+        android:hint="Latitude"
+        android:inputType="textPostalAddress"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/btnEdit"
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_marginStart="130dp"
-        android:layout_marginTop="525dp"
+        android:layout_marginTop="615dp"
         android:layout_marginEnd="131dp"
-        android:layout_marginBottom="156dp"
+        android:layout_marginBottom="66dp"
         android:backgroundTint="#4CAF50"
         android:text="Edit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/longitude"
+        android:layout_width="331dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="526dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="155dp"
+        android:hint="Longitude"
+        android:inputType="textPostalAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
